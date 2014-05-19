@@ -1,0 +1,26 @@
+{
+  "name": "angular-pdxTrimetApi",
+  "version": "0.0.1",
+  "homepage": "https://github.com/wintermuted/angular-pdxTrimetApi",
+  "authors": [
+    "Jameson Nyeholt <jameson.nyeholt@gmail.com>"
+  ],
+  "description": "An Angular module that provides an easy way to to access the Portland Trimet API, thereby allowing developers to access route and arrival information for the Portland Streetcar, Trimet Light Rail, and Trimet bus system.",
+  "keywords": [
+    "angular",
+    "trimet",
+    "pdx",
+    "API",
+    "module",
+    "transit"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ]
+}
