@@ -1,6 +1,8 @@
-'use strict';
-angular.module('pdxTrimetApi', ['$http', '$q'])
+angular.module('pdxTrimet.api', ['ngResource'])
+
     .factory('trimet', function ($http, $q) {
+        'use strict';
+
         // Service logic
         var trimetAppId = "F3757A12A14F88550C14A9A2B";
         var baseUrl = 'http://developer.trimet.org/ws/V1/';
