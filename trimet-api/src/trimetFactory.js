@@ -1,13 +1,14 @@
 'use strict';
-angular.module('pdxTrimetApi')
-    .factory('trimet', function ($http) {
+angular.module('pdxTrimetApi', ['$http', '$q'])
+    .factory('trimet', function ($http, $q) {
         // Service logic
         var trimetAppId = "F3757A12A14F88550C14A9A2B";
         var baseUrl = 'http://developer.trimet.org/ws/V1/';
         var trimetURL;
 
-        function getArrivals(stop, success, error) {
-            var locID = stop.locid;
+        function getArrivalsForStreetCar(stop) {
+            var locID = stop.locid,
+                deferred = $q.defer();
             trimetURL = baseUrl + 'arrivals/json/true/streetcar/true/locIDs/' + locID + '/appID/' + trimetAppId;
             $http({
                 method: 'GET',
@@ -18,14 +19,16 @@ angular.module('pdxTrimetApi')
                 }
             }).
                 success(function (data, status, headers, config) {
-                    success(data);
+                    deferred.resolve(data);
                 }).
                 error(function (data, status, headers, config) {
-                    error(data);
+                    deferred.reject(data);
                 });
+            return deferred.promise;
         }
 
-        function getTrimetRoutes(success, error) {
+        function getTrimetRoutes() {
+            var deferred = $q.defer();
             trimetURL = baseUrl + 'routeConfig/json/true/routes/100,200,90,190/stops/tp/dir/appID/' + trimetAppId;
             $http({
                 method: 'GET',
@@ -36,14 +39,16 @@ angular.module('pdxTrimetApi')
                 }
             }).
                 success(function (data, status, headers, config) {
-                    success(data);
+                    deferred.resolve(data);
                 }).
                 error(function (data, status, headers, config) {
-                    error();
+                    deferred.reject(data);
                 });
+            return deferred.promise;
         }
 
-        function getStreetcarRoutes(success, error) {
+        function getStreetcarRoutes() {
+            var deferred = $q.defer();
             trimetURL = baseUrl + 'routeConfig/json/true/routes/193,194/stops/tp/dir/appID/' + trimetAppId;
             $http({
                 method: 'GET',
@@ -54,14 +59,16 @@ angular.module('pdxTrimetApi')
                 }
             }).
                 success(function (data, status, headers, config) {
-                    success(data);
+                    deferred.resolve(data);
                 }).
                 error(function (data, status, headers, config) {
-                    error();
+                    deferred.reject(data);
                 });
+            return deferred.promise;
         }
 
         function getStopsAroundLocation(lat, lng, radiusFeet, success, error) {
+            var deferred = $q.defer();
             var latLng = lat + ',' + lng;
             trimetURL = baseUrl + 'stops/json/true/showRoutes/true/showRouteDirs/true/ll/' + latLng + '/feet/' + radiusFeet + '/appID/' + trimetAppId;
             $http({
@@ -73,34 +80,35 @@ angular.module('pdxTrimetApi')
                 }
             }).
                 success(function (data, status, headers, config) {
-                    success(data);
+                    deferred.resolve(data);
                 }).
                 error(function (data, status, headers, config) {
-                    error();
+                    deferred.reject(data);
                 });
+            return deferred.promise;
         }
 
         // Public API here
         return {
             getStopsAroundLocation: function (lat, lng, radiusFeet, success, error) {
-                getStopsAroundLocation(lat, lng, radiusFeet, success, error);
+                return getStopsAroundLocation(lat, lng, radiusFeet, success, error);
             },
-            getArrivalsForStop: function (stop, success, error) {
-                return getArrivals(stop, success, error);
+            getArrivalsForStop: function (stop) {
+                return getArrivalsForStreetCar(stop);
             },
             rail: {
-                getRoutes: function (success, error) {
-                    return getTrimetRoutes(success, error);
+                getRoutes: function () {
+                    return getTrimetRoutes();
                 }
             },
             streetcar: {
-                getRoutes: function (success, error) {
-                    return getStreetcarRoutes(success, error);
+                getRoutes: function () {
+                    return getStreetcarRoutes();
                 }
             },
             bus: {
-                getRoutes: function (success, error) {
-                    return getTrimetRoutes(success, error);
+                getRoutes: function () {
+                    return getTrimetRoutes();
                 }
             }
         };
