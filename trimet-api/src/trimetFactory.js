@@ -49,6 +49,26 @@ angular.module('pdxTrimet.api', ['ngResource'])
             return deferred.promise;
         }
 
+        function getBusRoutes() {
+            var deferred = $q.defer();
+            trimetURL = baseUrl + 'routeConfig/json/true/routes/100,200,90,190/stops/tp/dir/appID/' + trimetAppId;
+            $http({
+                method: 'GET',
+                url: trimetURL,
+                responseType: 'xml',
+                headers: {
+                    'Accept': 'application/xml, text/xml, */*; q=0.01'
+                }
+            }).
+                success(function (data, status, headers, config) {
+                    deferred.resolve(data);
+                }).
+                error(function (data, status, headers, config) {
+                    deferred.reject(data);
+                });
+            return deferred.promise;
+        }
+
         function getStreetcarRoutes() {
             var deferred = $q.defer();
             trimetURL = baseUrl + 'routeConfig/json/true/routes/193,194/stops/tp/dir/appID/' + trimetAppId;
@@ -69,7 +89,7 @@ angular.module('pdxTrimet.api', ['ngResource'])
             return deferred.promise;
         }
 
-        function getStopsAroundLocation(lat, lng, radiusFeet, success, error) {
+        function getStopsAroundLocation(lat, lng, radiusFeet) {
             var deferred = $q.defer();
             var latLng = lat + ',' + lng;
             trimetURL = baseUrl + 'stops/json/true/showRoutes/true/showRouteDirs/true/ll/' + latLng + '/feet/' + radiusFeet + '/appID/' + trimetAppId;
@@ -92,8 +112,8 @@ angular.module('pdxTrimet.api', ['ngResource'])
 
         // Public API here
         return {
-            getStopsAroundLocation: function (lat, lng, radiusFeet, success, error) {
-                return getStopsAroundLocation(lat, lng, radiusFeet, success, error);
+            getStopsAroundLocation: function (lat, lng, radiusFeet) {
+                return getStopsAroundLocation(lat, lng, radiusFeet);
             },
             getArrivalsForStop: function (stop) {
                 return getArrivalsForStreetCar(stop);
@@ -110,7 +130,7 @@ angular.module('pdxTrimet.api', ['ngResource'])
             },
             bus: {
                 getRoutes: function () {
-                    return getTrimetRoutes();
+                    return getBusRoutes();
                 }
             }
         };
