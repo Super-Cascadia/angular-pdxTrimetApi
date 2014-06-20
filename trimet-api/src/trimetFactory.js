@@ -51,7 +51,7 @@ angular.module('pdxTrimet.api', ['ngResource'])
 
         function getBusRoutes() {
             var deferred = $q.defer();
-            trimetURL = baseUrl + 'routeConfig/json/true/routes/100,200,90,190/stops/tp/dir/appID/' + trimetAppId;
+            trimetURL = baseUrl + 'routeConfig/json/true/stops/tp/dir/appID/' + trimetAppId;
             $http({
                 method: 'GET',
                 url: trimetURL,
