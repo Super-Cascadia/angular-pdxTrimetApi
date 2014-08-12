@@ -8,10 +8,9 @@ angular.module('pdxTrimet.api', ['ngResource'])
         var baseUrl = 'http://developer.trimet.org/ws/V1/';
         var trimetURL;
 
-        function getArrivalsForStreetCar(stop) {
-            var locID = stop.locid,
-                deferred = $q.defer();
-            trimetURL = baseUrl + 'arrivals/json/true/streetcar/true/locIDs/' + locID + '/appID/' + trimetAppId;
+        function getArrivalsForStreetCar(locid) {
+            var deferred = $q.defer();
+            trimetURL = baseUrl + 'arrivals/json/true/locIDs/' + locid + '/appID/' + trimetAppId;
             $http({
                 method: 'GET',
                 url: trimetURL,
@@ -49,9 +48,12 @@ angular.module('pdxTrimet.api', ['ngResource'])
             return deferred.promise;
         }
 
-        function getBusRoutes() {
+        function getAllBusRoutes() {
             var deferred = $q.defer();
-            trimetURL = baseUrl + 'routeConfig/json/true/stops/tp/dir/appID/' + trimetAppId;
+            var routeNumbers = [
+                1,4,6,8,9,10,11,12,14,15,16,17,18,19,20,21,22,23,24,25,28,29,30,31,32,33,34,35,36,37,38,39,43,44,45,46,47,48,50,51,52,53,54,55,56,57,58,59,61,62,63,64,65,66,67,68,70,71,72,75,76,77,78,79,80,81,83,84,85,87,88,92,93,94,96,99,152,154,155,156
+            ];
+            trimetURL = baseUrl + 'routeConfig/json/true/routes/' + routeNumbers + '/stops/tp/dir/true/appID/' + trimetAppId;
             $http({
                 method: 'GET',
                 url: trimetURL,
@@ -110,28 +112,41 @@ angular.module('pdxTrimet.api', ['ngResource'])
             return deferred.promise;
         }
 
+        function getStops (routeId) {
+            var deferred = $q.defer();
+            trimetURL = baseUrl + 'routeConfig/json/true/routes/'+ routeId +'/stops/tp/dir/appID/' + trimetAppId;
+            $http({
+                method: 'GET',
+                url: trimetURL,
+                responseType: 'xml',
+                headers: {
+                    'Accept': 'application/xml, text/xml, */*; q=0.01'
+                }
+            }).
+                success(function (data, status, headers, config) {
+                    deferred.resolve(data);
+                }).
+                error(function (data, status, headers, config) {
+                    deferred.reject(data);
+                });
+            return deferred.promise;
+        }
+
         // Public API here
         return {
-            getStopsAroundLocation: function (lat, lng, radiusFeet) {
-                return getStopsAroundLocation(lat, lng, radiusFeet);
-            },
+            getStopsAroundLocation: getStopsAroundLocation,
             getArrivalsForStop: function (stop) {
                 return getArrivalsForStreetCar(stop);
             },
             rail: {
-                getRoutes: function () {
-                    return getTrimetRoutes();
-                }
+                getRoutes: getTrimetRoutes
             },
             streetcar: {
-                getRoutes: function () {
-                    return getStreetcarRoutes();
-                }
+                getRoutes: getStreetcarRoutes
             },
             bus: {
-                getRoutes: function () {
-                    return getBusRoutes();
-                }
-            }
+                getRoutes: getAllBusRoutes
+            },
+            getStops: getStops
         };
     });
